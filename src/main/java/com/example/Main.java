@@ -17,15 +17,15 @@ public class Main {
         InputStreamReader(server.getInputStream()));
         DataOutputStream out = new
         DataOutputStream(server.getOutputStream());
-        System.out.println("Client collegato");
+        System.out.println("Marinaio a bordo");
         Scanner myScan = new Scanner(System.in);
         String ins;
         boolean accesso = false;
         // Login/Sign Up loop
         while (!accesso) {
-            System.out.println("Inserisci la tua scelta:");
-            System.out.println("L- Effettua il log in");
-            System.out.println("S- Effettua il sign up");
+            System.out.println("Benvenuto farabutto, Scegli un’opzione:");
+            System.out.println("Seleziona L per fare il LOG IN e riprendere i tuoi averi;");
+            System.out.println("Seleziona S per fare il SIGN UP e unirti per la prima volta a questa ciurma;");
             ins = myScan.nextLine();
             String scelta;
             if(ins.equals("L")){
@@ -38,24 +38,30 @@ public class Main {
             out.writeBytes(scelta + "\n");
             switch (scelta) {
                 case "L_I":
+                    String controllo = in.readLine();
+                    if(controllo.equals("noU")){
+                        System.out.println("Spiacente, ma questo galeone è nuovo di zecca, non ci è mai salito nessuno apparte me...");
+                        System.out.println("Che ne dici di essere il primo membro?");
+                        accesso = SignUp(myScan, in, out);
+                        break;
+                    }
                     accesso = Login(myScan, in, out);
                     break;
                 case "S_U":
                     accesso = SignUp(myScan, in, out);
                     break;
                 default:
-                    System.out.println("Scelta non valida, riprova.");
+                    accesso = false;
+                    System.out.println("Mi stai prendendo in giro, hai 2 opzioni, non è difficile, riprova.");
                     break;
             }
         }
         // Main menu after login/signup
         boolean exit = false;
         while (!exit) {
-            System.out.println("\nScegli un'azione:");
-            System.out.println("\n1 - Inizia chat");
-            System.out.println("\n2 - Lista utenti");
-            System.out.println("\n3 - Blocca contatti");
-            System.out.println("\n4 - Logout\n");
+            System.out.println("Ci troviamo all’interno del Galeone, cosa vuoi fare?");
+            System.out.println("Se vuoi andare a parlare con i marinai a bordo premi pure C”");
+            System.out.println("Se vuoi vedere tutti marinai presenti sul Galeone premi pure M");
             String actionChoice = myScan.nextLine();
             switch (actionChoice) {
                 case "1":
@@ -82,52 +88,46 @@ public class Main {
     }
     // Method login
     private static boolean Login(Scanner myScan, BufferedReader in, DataOutputStream out) throws IOException {
-        System.out.println("Inserisci nome utente: ");
+        System.out.println("Inserisci il tuo vecchio Nome da pirata:");
         String nomeUtente = myScan.nextLine();
         out.writeBytes(nomeUtente + '\n');
-        System.out.println("Inserisci la password: ");
+        System.out.println("Inserisci la Chiave del tuo tesoro:");
         String password = myScan.nextLine();
         out.writeBytes(password + '\n');
         String response = in.readLine();
         if (response.equals("v")) {
-            System.out.println("Log in effettuato.");
+            System.out.println("Ora mi ricordo di te, che compagno fantanstico, ecco i tuoi averi...");
             return true;
         } else {
             if (response.equals("!u")) {
-                System.out.println("Username errato.");
+                System.out.println("Questo Nome mi puzza...");
             } else if (response.equals("!p")) {
-                System.out.println("Password errata.");
+                System.out.println("Questa Chiave non gira...");
             } else if (response.equals("!all")) {
-                System.out.println("Username e password errati.");
+                System.out.println("Ti è venuto il mal di mare? Queste caratteristiche mi puzzano...");
             }
             return false;
         }
     }
     // Method sign-up
     private static boolean SignUp(Scanner myScan, BufferedReader in, DataOutputStream out) throws IOException {
-        System.out.println("Inserisci nome utente: ");
+        System.out.println("Inserisci il tuo Nome da pirata:");
         String nomeUtente = myScan.nextLine();
         out.writeBytes(nomeUtente + '\n');
         String response = in.readLine();
         if (response.equals("!u")) {
-            System.out.println("Username già esistente.");
+            System.out.println("Questo Nome mi puzza...");
             return false;
         }
-        System.out.println("Crea una password: ");
+        System.out.println("Inserisci la Chiave del tuo tesoro:");
         String password = myScan.nextLine();
         out.writeBytes(password + '\n');
-        response = in.readLine();
-        if (response.equals("v")) {
-            System.out.println("Sign up effettuato con successo!");
-            return true;
-        } else {
-            System.out.println("Errore nella registrazione. Riprova.");
-            return false;
-        }
+        System.out.println("Ecco un nuovo membro, avremo delle bellissime avventure, attento solo ai mostri marini hahaha!!!");
+        return true;
     }
     // Method to start a chat
     private static void startChat(Scanner myScan, BufferedReader in, DataOutputStream out) throws IOException {
-        System.out.println("Inserisci il codice utente con cui vuoi chattare:");
+        System.out.println("Inserisci il nome del marinaio con cui vuoi conversare:");
         String userCode = myScan.nextLine();
         out.writeBytes("CHAT " + userCode + '\n');
         String response = in.readLine();
