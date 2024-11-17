@@ -22,8 +22,8 @@ public class Main {
         String ins;
         boolean accesso = false;
         // Login/Sign Up loop
+        System.out.println("Benvenuto farabutto, Scegli un'opzione:");
         while (!accesso) {
-            System.out.println("Benvenuto farabutto, Scegli un’opzione:");
             System.out.println("Seleziona L per fare il LOG IN e riprendere i tuoi averi;");
             System.out.println("Seleziona S per fare il SIGN UP e unirti per la prima volta a questa ciurma;");
             ins = myScan.nextLine();
@@ -63,19 +63,21 @@ public class Main {
             System.out.println("Se vuoi andare a parlare con i marinai a bordo premi pure C”");
             System.out.println("Se vuoi vedere tutti marinai presenti sul Galeone premi pure M");
             String actionChoice = myScan.nextLine();
-            switch (actionChoice) {
-                case "1":
+            String scelta;
+            if(actionChoice.equals("C")){
+                scelta = "Chat";
+            }else if(actionChoice.equals("M")){
+                scelta = "Members";
+            }else{
+                scelta = "!";
+            }
+            out.writeBytes(actionChoice);
+            switch (scelta) {
+                case "Chat":
                     startChat(myScan, in, out);
                     break;
-                case "2":
+                case "Members":
                     listUsers(in, out);
-                    break;
-                case "3":
-                    blockContacts(myScan, out);
-                    break;
-                case "4":
-                    System.out.println("Disconnessione...");
-                    exit = true;
                     break;
                 default:
                     System.out.println("Opzione non valida. Riprova.");
@@ -91,10 +93,12 @@ public class Main {
         System.out.println("Inserisci il tuo vecchio Nome da pirata:");
         String nomeUtente = myScan.nextLine();
         out.writeBytes(nomeUtente + '\n');
+        System.out.println(in.readLine());
         System.out.println("Inserisci la Chiave del tuo tesoro:");
         String password = myScan.nextLine();
         out.writeBytes(password + '\n');
         String response = in.readLine();
+        System.out.println("input: " + response);
         if (response.equals("v")) {
             System.out.println("Ora mi ricordo di te, che compagno fantanstico, ecco i tuoi averi...");
             return true;
@@ -116,7 +120,7 @@ public class Main {
         out.writeBytes(nomeUtente + '\n');
         String response = in.readLine();
         if (response.equals("!u")) {
-            System.out.println("Questo Nome mi puzza...");
+            System.out.println("Questo Nome mi puzza...magari eri già stato qui a bordo? Scegli di nuovo cosa fare:");
             return false;
         }
         System.out.println("Inserisci la Chiave del tuo tesoro:");
