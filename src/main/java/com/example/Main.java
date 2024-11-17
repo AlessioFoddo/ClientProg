@@ -19,6 +19,30 @@ public class Main {
         DataOutputStream(server.getOutputStream());
         System.out.println("Marinaio a bordo");
         Scanner myScan = new Scanner(System.in);
+
+        // Variabile per determinare se fermare il thread di ascolto
+        boolean[] listening = {true}; // Array per passare per riferimento
+
+        // Thread di ascolto
+        Thread listenerThread = new Thread(() -> {
+            try {
+                while (listening[0]) {
+                    if (in.ready()) { // Controlla se ci sono nuovi messaggi senza bloccare
+                        String message = in.readLine();
+                        if (message.equals("msg")) {
+                            String sender = in.readLine(); // Leggi il nome del mittente
+                            String text = in.readLine();  // Leggi il contenuto del messaggio
+                            System.out.println("\n[NOTIFICA]: Hai un nuovo messaggio da " + sender + ": " + text);
+                        }
+                    }
+                    Thread.sleep(100); // Evita consumi eccessivi di CPU
+                }
+            } catch (IOException | InterruptedException e) {
+                System.out.println("Errore nel thread di ascolto: " + e.getMessage());
+            }
+        });
+        listenerThread.start();
+
         String ins;
         boolean accesso = false;
         // Login/Sign Up loop
@@ -59,7 +83,7 @@ public class Main {
         // Main menu after login/signup
         boolean exit = false;
         while (!exit) {
-            System.out.println("Ci troviamo all’interno del Galeone, cosa vuoi fare?");
+            System.out.println("Ci troviamo all'interno del Galeone, cosa vuoi fare?");
             System.out.println("Se vuoi andare a parlare con i marinai a bordo premi pure C”");
             System.out.println("Se vuoi vedere tutti marinai presenti sul Galeone premi pure M");
             String actionChoice = myScan.nextLine();
@@ -71,7 +95,7 @@ public class Main {
             }else{
                 scelta = "!";
             }
-            out.writeBytes(actionChoice);
+            out.writeBytes(scelta + "\n");
             switch (scelta) {
                 case "Chat":
                     startChat(myScan, in, out);
@@ -88,6 +112,7 @@ public class Main {
         server.close();
         myScan.close();
     }
+    
     // Method login
     private static boolean Login(Scanner myScan, BufferedReader in, DataOutputStream out) throws IOException {
         System.out.println("Inserisci il tuo vecchio Nome da pirata:");
@@ -132,23 +157,23 @@ public class Main {
     // Method to start a chat
     private static void startChat(Scanner myScan, BufferedReader in, DataOutputStream out) throws IOException {
         System.out.println("Inserisci il nome del marinaio con cui vuoi conversare:");
-        String userCode = myScan.nextLine();
-        out.writeBytes("CHAT " + userCode + '\n');
+        String username = myScan.nextLine();
+        out.writeBytes(username + '\n');
         String response = in.readLine();
-        if (response.equals("presente")) {
-            System.out.println("Inizio chat con l'utente " + userCode);
+        if (response.equals("u_v")) {
+            System.out.println("Inizio chat con l'utente " + username);
             System.out.println("Scrivi il tuo messaggio (digita 'exit' per terminare):");
             while (true) {
                 String message = myScan.nextLine();
                 if (message.equalsIgnoreCase("exit")) {
-                out.writeBytes("END_CHAT\n");
-                System.out.println("Chat terminata.");
-                break;
+                    out.writeBytes("end\n");
+                    System.out.println("Chat terminata.");
+                    break;
                 }
                 out.writeBytes("MSG " + message + '\n');
             }
         } else {
-            System.out.println("Utente non trovato o non disponibile.");
+            System.out.println("Questo nome mi puzza...");
         }
     }
     // Method to list users
