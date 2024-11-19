@@ -26,20 +26,16 @@ public class Main {
                 while (true) {
                     if (in.ready()) {
                         String message = in.readLine();
-                        System.out.println(message);
                         if (message != null) {
                             // Controlla se il messaggio è del tipo "msg"
                             if (message.equals("msg")) {
                                 String sender = in.readLine(); // Leggi il nome del mittente
                                 String text = in.readLine();  // Leggi il contenuto del messaggio
                                 System.out.println("\n[NOTIFICA]: Hai un nuovo messaggio da " + sender + ": " + text);
-                            } else {
-                                // Stampa messaggi generici o notifiche
-                                System.out.println("[SERVER]: " + message);
                             }
                         }
                     }
-                    Thread.sleep(100); // Pausa per evitare consumi eccessivi di CPU
+                    Thread.sleep(1000); // Pausa per evitare consumi eccessivi di CPU
                 }
             } catch (IOException | InterruptedException e) {
                 System.out.println("Errore nel thread di ascolto: " + e.getMessage());
@@ -70,38 +66,49 @@ public class Main {
                     accesso = SignUp(myScan, in, out);
                     break;
                 default:
-                    System.out.println("Mi stai prendendo in giro, hai 2 opzioni, non è difficile, riprova.");
+                    System.out.println("Mi stai prendendo in giro? Hai 2 opzioni, non è difficile, riprova.");
                     break;
             }
         }
     
         // Menu principale
         boolean exit = false;
-        while (!exit) {
+        do{
             System.out.println("\nCi troviamo all'interno del Galeone, cosa vuoi fare?");
             System.out.println("Se vuoi andare a parlare con i marinai a bordo premi pure C.");
             System.out.println("Se vuoi vedere tutti marinai presenti sul Galeone premi pure M.");
+            System.out.println("Se vuoi lasciare la ciurma allora premi O:");
             String ins = myScan.nextLine();
-            String scelta = ins.equals("C") ? "Chat" : ins.equals("M") ? "Members" : "!";
+            String scelta = ins.equals("C") ? "Chat" : ins.equals("M") ? "Members" : ins.equals("O") ? "Out" : "!";
             System.out.println(scelta);
             out.writeBytes(scelta + "\n");
     
             switch (scelta) {
                 case "Chat":
                     startChat(myScan, in, out);
+                    exit = false;
                     break;
+
                 case "Members":
                     listUsers(in, out);
+                    exit = false;
                     break;
+
+                case "Out":
+                    System.out.println("Vergogati, mi aspettavo di meglio traditore...");
+                    exit = true;
+                    break;
+
                 default:
-                    System.out.println("Opzione non valida. Riprova.");
+                    System.out.println("Mi stai prendendo in giro? Hai 3 opzioni, non è difficile, riprova.");
                     break;
             }
-        }
-    
+        }while(!exit);
         // Chiusura delle risorse
         server.close();
         myScan.close();
+        in.close();
+        out.close();
     }
     
     // Method login
@@ -152,7 +159,7 @@ public class Main {
         out.writeBytes(username + '\n');
         String response = in.readLine();
         if (response.equals("u_v")) {
-            System.out.println("Inizio chat con l'utente " + username);
+            System.out.println(" " + username);
             System.out.println("Scrivi il tuo messaggio (digita 'end' per terminare):");
             while (true) {
                 String message = myScan.nextLine();
@@ -164,14 +171,18 @@ public class Main {
                 out.writeBytes(message + '\n');
             }
         } else {
-            System.out.println("Questo nome mi puzza...");
+            System.out.println("Questo nome mi puzza...questo nome mi e' nuovo");
         }
     }
     // Method to list users
     private static void listUsers(BufferedReader in, DataOutputStream out) throws IOException {
-        out.writeBytes("LIST_USERS\n");
-        String userList = in.readLine();
-        System.out.println("Utenti attivi:\n" + userList);
+        System.out.println("Utenti esistenti:");
+        String userList;
+        int i = 1;
+        while (!(userList = in.readLine()).equals("end")) {
+            System.out.println(i + ") " + userList + ";");
+            i++;
+        }
     }
     // Method to block contacts
     private static void blockContacts(Scanner myScan, DataOutputStream out) throws IOException {
