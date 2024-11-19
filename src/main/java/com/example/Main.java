@@ -78,11 +78,12 @@ public class Main {
         // Menu principale
         boolean exit = false;
         while (!exit) {
-            System.out.println("\nCi troviamo all’interno del Galeone, cosa vuoi fare?");
+            System.out.println("\nCi troviamo all'interno del Galeone, cosa vuoi fare?");
             System.out.println("Se vuoi andare a parlare con i marinai a bordo premi pure C.");
             System.out.println("Se vuoi vedere tutti marinai presenti sul Galeone premi pure M.");
-            String actionChoice = myScan.nextLine();
-            String scelta = actionChoice.equals("C") ? "Chat" : actionChoice.equals("M") ? "Members" : "!";
+            String ins = myScan.nextLine();
+            String scelta = ins.equals("C") ? "Chat" : ins.equals("M") ? "Members" : "!";
+            System.out.println(scelta);
             out.writeBytes(scelta + "\n");
     
             switch (scelta) {
@@ -102,106 +103,6 @@ public class Main {
         server.close();
         myScan.close();
     }
-    
-    /*public static void main(String[] args) throws UnknownHostException, IOException {
-        System.out.println("Client partito");
-        // Establish connection to the server
-        // collegamento tra pc diversi in classe 10.22.9.17
-        Socket server = new Socket("localhost", 3000);
-        BufferedReader in = new BufferedReader(new
-        InputStreamReader(server.getInputStream()));
-        DataOutputStream out = new
-        DataOutputStream(server.getOutputStream());
-        System.out.println("Marinaio a bordo");
-        Scanner myScan = new Scanner(System.in);
-
-        // Variabile per determinare se fermare il thread di ascolto
-        boolean[] listening = {true}; // Array per passare per riferimento
-
-        // Thread di ascolto
-        Thread listenerThread = new Thread(() -> {
-            try {
-                String msg;
-                while ((msg = in.readLine()).equals("msg")) {
-                    String sender = in.readLine(); // Leggi il nome del mittente
-                    String text = in.readLine();  // Leggi il contenuto del messaggio
-                    System.out.println("\n[NOTIFICA]: Hai un nuovo messaggio da " + sender + ": " + text);
-                }
-            } catch (IOException e) {
-                System.out.println("Errore nel thread di ascolto: " + e.getMessage());
-            }
-        });
-        listenerThread.start();
-
-        String ins;
-        boolean accesso = false;
-        // Login/Sign Up loop
-        System.out.println("Benvenuto farabutto, Scegli un'opzione:");
-        while (!accesso) {
-            System.out.println("Seleziona L per fare il LOG IN e riprendere i tuoi averi;");
-            System.out.println("Seleziona S per fare il SIGN UP e unirti per la prima volta a questa ciurma;");
-            ins = myScan.nextLine();
-            String scelta;
-            if(ins.equals("L")){
-                scelta = "L_I";
-            }else if(ins.equals("S")){
-                scelta = "S_U";
-            }else{
-                scelta = "!";
-            }
-            out.writeBytes(scelta + "\n");
-            switch (scelta) {
-                case "L_I":
-                    String controllo = in.readLine();
-                    if(controllo.equals("noU")){
-                        System.out.println("Spiacente, ma questo galeone è nuovo di zecca, non ci è mai salito nessuno apparte me...");
-                        System.out.println("Che ne dici di essere il primo membro?");
-                        accesso = SignUp(myScan, in, out);
-                        break;
-                    }
-                    accesso = Login(myScan, in, out);
-                    break;
-                case "S_U":
-                    accesso = SignUp(myScan, in, out);
-                    break;
-                default:
-                    accesso = false;
-                    System.out.println("Mi stai prendendo in giro, hai 2 opzioni, non è difficile, riprova.");
-                    break;
-            }
-        }
-        // Main menu after login/signup
-        boolean exit = false;
-        while (!exit) {
-            System.out.println("Ci troviamo all'interno del Galeone, cosa vuoi fare?");
-            System.out.println("Se vuoi andare a parlare con i marinai a bordo premi pure C”");
-            System.out.println("Se vuoi vedere tutti marinai presenti sul Galeone premi pure M");
-            String actionChoice = myScan.nextLine();
-            String scelta;
-            if(actionChoice.equals("C")){
-                scelta = "Chat";
-            }else if(actionChoice.equals("M")){
-                scelta = "Members";
-            }else{
-                scelta = "!";
-            }
-            out.writeBytes(scelta + "\n");
-            switch (scelta) {
-                case "Chat":
-                    startChat(myScan, in, out);
-                    break;
-                case "Members":
-                    listUsers(in, out);
-                    break;
-                default:
-                    System.out.println("Opzione non valida. Riprova.");
-                    break;
-            }
-        }
-    // Closing resources
-        server.close();
-        myScan.close();
-    }*/
     
     // Method login
     private static boolean Login(Scanner myScan, BufferedReader in, DataOutputStream out) throws IOException {
