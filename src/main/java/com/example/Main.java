@@ -90,6 +90,7 @@ public class Main {
                         System.out.println("Inserisci il nome del marinaio");
                         String username = myScan.nextLine();
                         out.writeBytes(username + '\n');
+                        sceltaTematica(out, myScan);
                         String response = in.readLine();
                         if (response.equals("u_v")) {
                             startChat(myScan, in, out);
@@ -105,6 +106,7 @@ public class Main {
                             System.out.println("\nScegli con quale marinaio conversare inserendo il codice della conversazione;");
                             System.out.println("Altrimenti inserisci 'new' per iniziare una nuova conversazione con un altro marinaio;");
                             System.out.println("Altrimenti inserisci 'exit' per svolgere altre attività");
+                            System.out.println("Altrimenti inserisci 'theme' per visualizzare tutti codici delle conversazioni tematiche");
                             String answer = myScan.nextLine();
                             out.writeBytes(answer + "\n");
                             switch (answer) {
@@ -112,6 +114,7 @@ public class Main {
                                     System.out.println("Inserisci il nome del marinaio");
                                     String username = myScan.nextLine();
                                     out.writeBytes(username + '\n');
+                                    sceltaTematica(out, myScan);
                                     String response = in.readLine();
                                     if (response.equals("u_v")) {
                                         startChat(myScan, in, out);
@@ -125,6 +128,26 @@ public class Main {
                                 case "exit":
                                     System.out.println("Deciti, scegli per bene cosa vuoi fare...");
                                     controllo = false;
+                                    break;
+
+                                case "theme":
+                                    System.out.println("Inserisci la tematica che vuoi visualizzare:");
+                                    boolean rightChose = false;
+                                    String theme;
+                                    do {
+                                        System.out.println("'SL' per visualizzare la tematica scolastica;");
+                                        System.out.println("'GM' per visualizzare la tematica gaming;");
+                                        theme = myScan.nextLine();
+                                        if(theme.equals("SL") || theme.equals("GM")){
+                                            rightChose = true;
+                                        }else{
+                                            System.out.println("Hai sbagliato a scirvere, riprova...");
+                                            rightChose = false;
+                                        }
+                                    } while (!rightChose);
+                                    out.writeBytes(theme + "\n");
+                                    showTheme(in);
+                                    controllo = true;
                                     break;
                             
                                 default:
@@ -210,9 +233,19 @@ public class Main {
     }
     // Method to start a chat
     private static void startChat(Scanner myScan, BufferedReader in, DataOutputStream out) throws IOException {
+        boolean fine = false;
+        do {
             System.out.println("Scrivi pure la tua lettera:");
             String message = myScan.nextLine();
             out.writeBytes(message + '\n');
+            String controllo = in.readLine();
+            if(controllo.equals("!txt")){
+                System.out.println("Il codice usato è errato...riprova");
+                fine = false;
+            }else{
+                fine = true;
+            }
+        } while (!fine);
     }
     // Method to list users
     private static void listUsers(BufferedReader in, DataOutputStream out) throws IOException {
@@ -259,4 +292,32 @@ public class Main {
         out.writeBytes("BLOCK " + contactToBlock + '\n');
         System.out.println("Contatto " + contactToBlock + " bloccato.");
     }
+
+    private static void sceltaTematica(DataOutputStream out, Scanner myScan)throws IOException{
+        String theme;
+        System.out.println("Scegli il tipo di tematica che vuoi dare a questa conversazione:");
+        boolean end = true;
+        do{
+            System.out.println("Inserisci SL per scegliere la tematica scolastica;");
+            System.out.println("Inserisci GM per scegliere la tematica gaming;");
+            System.out.println("Inserisci NT per non usare alcuna tematica in particolare.");
+            theme = myScan.nextLine();
+            if(theme.equals("SL") || theme.equals("GM") || theme.equals("NT")){
+                end = false;;
+            }else{
+                System.out.println("Mi stai prendendo in giro? Scegli bene...");
+                end = true;
+            }
+        }while(end);
+        out.writeBytes(theme + "\n");
+    }
+
+    public static void showTheme(BufferedReader in) throws IOException{
+        System.out.println("Tema: " + in.readLine());
+        int size = in.read();
+        for(int i = 0; i < size; i++){
+            System.out.println("[" + in.readLine() + "] = " + in.readLine());
+        }
+    }
+
 }
