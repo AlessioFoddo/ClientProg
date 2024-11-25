@@ -11,8 +11,6 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws UnknownHostException, IOException {
-        System.out.println("Client partito");
-    
         // Connessione al server
         Socket server = new Socket("localhost", 3000);
         BufferedReader in = new BufferedReader(new InputStreamReader(server.getInputStream()));
@@ -31,7 +29,7 @@ public class Main {
                             // Controlla se il messaggio è del tipo "msg"
                             if (message.equals("msg")) {
                                 String sender = in.readLine(); // Leggi il nome del mittente
-                                System.out.println("\n(il tuo pappagallo)MESSAGGIO, MESSAGGIO, arrivata nuova lettera da: " + sender + "(vola via).");
+                                System.out.println("\n(il tuo pappagallo)Craw! Craw! Messago da: " + sender + " (vola via).");
                             }
                         }
                     }
@@ -79,7 +77,6 @@ public class Main {
             System.out.println("Se vuoi lasciare la ciurma allora premi O:");
             String ins = myScan.nextLine();
             String scelta = ins.equals("C") ? "Chat" : ins.equals("M") ? "Members" : ins.equals("O") ? "Out" : "!";
-            System.out.println(scelta);
             out.writeBytes(scelta + "\n");
     
             switch (scelta) {
@@ -105,7 +102,7 @@ public class Main {
                         do{
                             System.out.println("\nScegli con quale marinaio conversare inserendo il codice della conversazione;");
                             System.out.println("Altrimenti inserisci 'new' per iniziare una nuova conversazione con un altro marinaio;");
-                            System.out.println("Altrimenti inserisci 'exit' per svolgere altre attività");
+                            System.out.println("Altrimenti inserisci 'exit' per svolgere altre attivià");
                             System.out.println("Altrimenti inserisci 'theme' per visualizzare tutti codici delle conversazioni tematiche");
                             String answer = myScan.nextLine();
                             out.writeBytes(answer + "\n");
@@ -195,12 +192,10 @@ public class Main {
         System.out.println("Inserisci il tuo vecchio Nome da pirata:");
         String nomeUtente = myScan.nextLine();
         out.writeBytes(nomeUtente + '\n');
-        System.out.println(in.readLine());
         System.out.println("Inserisci la Chiave del tuo tesoro:");
         String password = myScan.nextLine();
         out.writeBytes(password + '\n');
         String response = in.readLine();
-        System.out.println("input: " + response);
         if (response.equals("v")) {
             System.out.println("Ora mi ricordo di te, che compagno fantanstico, ecco i tuoi averi...");
             return true;
@@ -263,7 +258,6 @@ public class Main {
         String dstUser;
         int chatCode;
         int size = in.read();
-        System.out.println(size);
         for(int i = 0; i < size; i++){
             dstUser = in.readLine();
             chatCode = in.read();
@@ -284,13 +278,6 @@ public class Main {
             System.out.println(user + ": " + text);
             System.out.println("[" + code + "]");
         }
-    }
-    // Method to block contacts
-    private static void blockContacts(Scanner myScan, DataOutputStream out) throws IOException {
-        System.out.println("Inserisci il nome utente del contatto che vuoi bloccare:");
-        String contactToBlock = myScan.nextLine();
-        out.writeBytes("BLOCK " + contactToBlock + '\n');
-        System.out.println("Contatto " + contactToBlock + " bloccato.");
     }
 
     private static void sceltaTematica(DataOutputStream out, Scanner myScan)throws IOException{
