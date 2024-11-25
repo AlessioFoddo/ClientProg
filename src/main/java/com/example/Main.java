@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -30,15 +31,13 @@ public class Main {
                             // Controlla se il messaggio è del tipo "msg"
                             if (message.equals("msg")) {
                                 String sender = in.readLine(); // Leggi il nome del mittente
-                                String text = in.readLine();  // Leggi il contenuto del messaggio
-                                System.out.println("\n[NOTIFICA]: Hai un nuovo messaggio da " + sender + ": " + text);
+                                System.out.println("\n(il tuo pappagallo)MESSAGGIO, MESSAGGIO, arrivata nuova lettera da: " + sender + "(vola via).");
                             }
                         }
                     }
-                    Thread.sleep(1000); // Pausa per evitare consumi eccessivi di CPU
+                    Thread.sleep(100); // Pausa per evitare consumi eccessivi di CPU
                 }
             } catch (IOException | InterruptedException e) {
-                System.out.println("Errore nel thread di ascolto: " + e.getMessage());
             }
         });// Permette di terminare il thread con il programma principale
         listenerThread.start();
@@ -85,9 +84,64 @@ public class Main {
     
             switch (scelta) {
                 case "Chat":
-                    startChat(myScan, in, out);
-                    exit = false;
-                    break;
+                    int chats = in.read();
+                    if(chats == 0){
+                        System.out.println("Al momento non hai inviato o ricevuto alcuna lettera.");
+                        System.out.println("Inserisci il nome del marinaio");
+                        String username = myScan.nextLine();
+                        out.writeBytes(username + '\n');
+                        String response = in.readLine();
+                        if (response.equals("u_v")) {
+                            startChat(myScan, in, out);
+                        } else {
+                            System.out.println("Questo nome mi puzza...mi e' nuovo");
+                        }
+                        exit = false;
+                        break;
+                    }else{
+                        allChats(in, out);
+                        boolean controllo = true;
+                        do{
+                            System.out.println("\nScegli con quale marinaio conversare inserendo il codice della conversazione;");
+                            System.out.println("Altrimenti inserisci 'new' per iniziare una nuova conversazione con un altro marinaio;");
+                            System.out.println("Altrimenti inserisci 'exit' per svolgere altre attività");
+                            String answer = myScan.nextLine();
+                            out.writeBytes(answer + "\n");
+                            switch (answer) {
+                                case "new":
+                                    System.out.println("Inserisci il nome del marinaio");
+                                    String username = myScan.nextLine();
+                                    out.writeBytes(username + '\n');
+                                    String response = in.readLine();
+                                    if (response.equals("u_v")) {
+                                        startChat(myScan, in, out);
+                                        controllo = false;
+                                    } else {
+                                        System.out.println("Questo nome mi puzza...mi e' nuovo");
+                                        controllo = true;
+                                    }
+                                    break;
+
+                                case "exit":
+                                    System.out.println("Deciti, scegli per bene cosa vuoi fare...");
+                                    controllo = false;
+                                    break;
+                            
+                                default:
+                                    String verification = in.readLine();
+                                    if(verification.equals("u_v")){
+                                        showChat(in);
+                                        System.out.println("Scrivi la tua lettera:");
+                                        startChat(myScan, in, out);
+                                        controllo = false;
+                                    }else{
+                                        controllo = true;
+                                    }
+                                    break;
+                            }
+                        }while(controllo);
+                        break;
+                    }
 
                 case "Members":
                     listUsers(in, out);
@@ -110,6 +164,8 @@ public class Main {
         in.close();
         out.close();
     }
+
+    //Methods
     
     // Method login
     private static boolean Login(Scanner myScan, BufferedReader in, DataOutputStream out) throws IOException {
@@ -154,34 +210,46 @@ public class Main {
     }
     // Method to start a chat
     private static void startChat(Scanner myScan, BufferedReader in, DataOutputStream out) throws IOException {
-        System.out.println("Inserisci il nome del marinaio con cui vuoi conversare:");
-        String username = myScan.nextLine();
-        out.writeBytes(username + '\n');
-        String response = in.readLine();
-        if (response.equals("u_v")) {
-            System.out.println(" " + username);
-            System.out.println("Scrivi il tuo messaggio (digita 'end' per terminare):");
-            while (true) {
-                String message = myScan.nextLine();
-                if (message.equalsIgnoreCase("end")) {
-                    out.writeBytes("end\n");
-                    System.out.println("Chat terminata.");
-                    break;
-                }
-                out.writeBytes(message + '\n');
-            }
-        } else {
-            System.out.println("Questo nome mi puzza...questo nome mi e' nuovo");
-        }
+            System.out.println("Scrivi pure la tua lettera:");
+            String message = myScan.nextLine();
+            out.writeBytes(message + '\n');
     }
     // Method to list users
     private static void listUsers(BufferedReader in, DataOutputStream out) throws IOException {
-        System.out.println("Utenti esistenti:");
+        System.out.println("Marinai registrati:");
         String userList;
         int i = 1;
         while (!(userList = in.readLine()).equals("end")) {
             System.out.println(i + ") " + userList + ";");
             i++;
+        }
+    }
+    //Methods to show all chats
+    private static void allChats(BufferedReader in, DataOutputStream out) throws IOException {
+        System.out.println("Conversazioni tenute:");
+        String dstUser;
+        int chatCode;
+        int size = in.read();
+        System.out.println(size);
+        for(int i = 0; i < size; i++){
+            dstUser = in.readLine();
+            chatCode = in.read();
+            System.out.println("Conversazione con: " + dstUser);
+            System.out.println("Codice: " + chatCode);
+        }
+    }
+    // Methods to show chat
+    private static void showChat(BufferedReader in) throws IOException{
+        String user;
+        String text;
+        String code;
+        int size = in.read();
+        for(int i = 0; i < size; i++){
+            user = in.readLine();
+            text = in.readLine();
+            code = in.readLine();
+            System.out.println(user + ": " + text);
+            System.out.println("[" + code + "]");
         }
     }
     // Method to block contacts
