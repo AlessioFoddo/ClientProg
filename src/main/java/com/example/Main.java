@@ -151,7 +151,6 @@ public class Main {
                                     String verification = in.readLine();
                                     if(verification.equals("u_v")){
                                         showChat(in);
-                                        System.out.println("Scrivi la tua lettera:");
                                         startChat(myScan, in, out);
                                         controllo = false;
                                     }else{
